@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "allowJs": false,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "target": "ES6",
+    "module": "CommonJS",
+    "outDir": "dist",
+    "sourceMap": true,
+  },
+  "include": [
+    "./src/**/*.ts"
+  ]
+}
