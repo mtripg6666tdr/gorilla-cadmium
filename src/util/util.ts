@@ -23,6 +23,7 @@ export function filterResponseHeaders(headers:IncomingHttpHeaders, baseUrl:strin
   if(result["connection"]) delete result["connection"];
   if(result["content-encoding"]) delete result["content-encoding"];
   if(result["content-length"]) delete result["content-length"];
+  if(result["content-security-policy"]) delete result["content-security-policy"];
   if(result["set-cookie"]){
     for(let i = 0; i < result["set-cookie"].length; i++){
       result["set-cookie"][i] = result["set-cookie"][i]
