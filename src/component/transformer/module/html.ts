@@ -44,7 +44,7 @@ export function transformHtml(line:string, baseUrl:string){
   regex = /<\/body>/i;
   if(result.match(regex)){
     const id = Date.now();
-    result = result.replace(regex, `<div id="box-${id}" style="position:fixed;z-index:9999999999;padding:0.5em;margin:0px;bottom:0px;left:0px;width:100%;box-sizing:border-box;background-color:white;border-top:1px solid black;border-radius:unset;"><span style="line-height:1.8em;">これはWebプロキシを使用しています。<a href="/">トップに戻る</a></span><span style="position:absolute;top:0px;right:0.3em;font-size:140%;line-height:1em;cursor:pointer;display:block;" onclick="document.getElementById('box-${id}').style.display='none';">x</span></div>$&`)
+    result = result.replace(regex, `<div id="box-${id}" style="position:fixed;z-index:9999999999;padding:0.5em;margin:0px;bottom:0px;left:0px;width:100%;box-sizing:border-box;background-color:white;border-top:1px solid black;border-radius:unset;"><span style="line-height:1.8em;">これはWebプロキシを使用しています。<a href="/">トップに戻る</a>/<a href="${baseUrl}" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">オリジナルのページを開く</a></span><span style="position:absolute;top:0px;right:0.3em;font-size:140%;line-height:1em;cursor:pointer;display:block;" onclick="document.getElementById('box-${id}').style.display='none';">x</span></div>$&`)
   }
   line = transformStyle(line, baseUrl);
   return result;
