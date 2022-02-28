@@ -37,6 +37,10 @@ export function transformHtml(line:string, baseUrl:string){
   if(result.match(regex)){
     result = result.replace(regex, `$&\n<meta http-equiv="x-proxy" content="gorila-cadmium">\n<script src="/gc_module_inject.js" id="__gc_inject" data-original="${encodeURIComponent(baseUrl)}"></script>`);
   }
+  regex = /integrity=".+?"/ig;
+  if(result.match(regex)){
+    result = result.replace(regex, "");
+  }
   regex = /<\/body>/i;
   if(result.match(regex)){
     const id = Date.now();
