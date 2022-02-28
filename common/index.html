@@ -1,0 +1,44 @@
+<!DOCTYPE HTML>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>gorilla-cadmium</title>
+    <style>
+      body {
+        background-color: #3b3b3b;
+        color: white;
+        text-align: center;
+      }
+      h1 span {
+        font-size: 40%;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>gorilla-cadmium<span>beta</span></h1>
+    <input type="url" autocomplete="off" id="url" size="60" placeholder="URLを入力...">
+    <button type="button" id="go">Go!</button>
+    <script>
+      !function(){
+        const base64Encode = text=>{
+          return new Promise(resolve => {
+            const reader = new FileReader();
+            reader.onload = () => {
+              const offset = reader.result.indexOf(",") + 1;
+              resolve(reader.result.slice(offset));
+            };
+            reader.readAsDataURL(new Blob([text]));
+          });
+        };
+        document.getElementById("go").addEventListener("click", async (ev)=>{
+          ev.preventDefault();
+          const rawUrl = document.getElementById("url").value;
+          const url = new URL(rawUrl);
+          window.location.href = `/_x_session_x_/${(await base64Encode(url.origin)).replace(/\+/g, "-").replace(/\//g, "_")}${url.pathname + url.search + url.hash}`;
+          return;
+        })
+      }()
+    </script>
+  </body>
+</html>

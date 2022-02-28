@@ -7,7 +7,7 @@
     "allowJs": false,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "target": "ES6",
+    "target": "ES2019",
     "module": "CommonJS",
     "outDir": "dist",
     "sourceMap": true,
