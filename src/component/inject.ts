@@ -56,7 +56,11 @@
   } as typeof window.XMLHttpRequest.prototype.open;
   const formatElement = (element:Element) => {
     if (!element.tagName) return;
-    if (element.tagName.toLowerCase() === 'script' || element.tagName.toLowerCase() === 'iframe' || element.tagName.toLowerCase() === 'embed') {
+    if (
+      element.tagName.toLowerCase() === 'script' 
+      || element.tagName.toLowerCase() === 'iframe' 
+      || element.tagName.toLowerCase() === 'embed'
+      || element.tagName.toLowerCase() === 'img') {
       // @ts-ignore
       Object.defineProperty(element.__proto__, 'src', {
         set: function(value) {
@@ -88,6 +92,12 @@
     formatElement(element);
     return element;
   } as typeof window.document.createElement;
+  window.Image = function(width?:number, height?:number){
+    const img = document.createElement("img");
+    if(width) img.width = width;
+    if(height) img.height = height;
+    return img;
+  } as any;
   const appendChild_orig = window.document.appendChild;
   window.document.appendChild 
     = window.HTMLElement.prototype.appendChild
@@ -105,6 +115,14 @@
     } else 
       href = href;
     return setAttribute_orig.apply(this, arguments);
+  };
+  const sendBeacon_orig = window.navigator.sendBeacon;
+  window.navigator.sendBeacon = function(url, data){
+    if(typeof url === "string")
+      url = proxify(url);
+    else
+      url = new URL(proxify(url.href));
+    return sendBeacon_orig.apply(this, arguments);
   };
   setInterval(function() {
     if (!window.location.pathname.startsWith(`/${prefix}/${window.btoa(currentUrl.origin)}`)) {
