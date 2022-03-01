@@ -17,8 +17,10 @@
   </head>
   <body>
     <h1>gorilla-cadmium<span>beta</span></h1>
-    <input type="url" autocomplete="off" id="url" size="60" placeholder="URLを入力...">
-    <button type="button" id="go">Go!</button>
+    <form id="url_f">
+      <input type="url" autocomplete="off" id="url" size="60" placeholder="URLを入力...">
+      <button type="submit" id="go">Go!</button>
+    </form>
     <script>
       !function(){
         const base64Encode = text=>{
@@ -31,7 +33,7 @@
             reader.readAsDataURL(new Blob([text]));
           });
         };
-        document.getElementById("go").addEventListener("click", async (ev)=>{
+        document.getElementById("url_f").addEventListener("submit", async (ev)=>{
           ev.preventDefault();
           const rawUrl = document.getElementById("url").value;
           const url = new URL(rawUrl);
