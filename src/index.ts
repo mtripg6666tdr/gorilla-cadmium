@@ -7,6 +7,8 @@ import * as zlib from "zlib";
 
 const indexPage = fs.readFileSync(path.join(__dirname, "../common/index.html"), {encoding:"utf-8"});
 const injectScript = fs.readFileSync(path.join(__dirname, "./component/inject.js"), {encoding:"utf-8"});
+const error404Page = fs.readFileSync(path.join(__dirname, "../common/404.html"), {encoding:"utf-8"});
+const error500Page = fs.readFileSync(path.join(__dirname, "../common/500.html"), {encoding:"utf-8"});
 
 http.createServer(async (req, res) => {
   if(req.url === "/"){
@@ -58,8 +60,8 @@ http.createServer(async (req, res) => {
         ;
       }
       catch(e){
-        if(!res.headersSent) res.writeHead(404);
-        res.end();
+        if(!res.headersSent) res.writeHead(500, {"Content-Type": "text/html, charset=UTF-8"});
+        res.end(error500Page);
       }
     }else if(req.headers["referer"] && req.url !== "/"){
       const original = urlUtil.restoreOriginalUrl(new URL(req.headers["referer"]).pathname);
@@ -72,8 +74,8 @@ http.createServer(async (req, res) => {
       res.writeHead(302, {"Location": loc});
       res.end();
     }else{
-      if(!res.headersSent) res.writeHead(404);
-      res.end();
+      if(!res.headersSent) res.writeHead(404, {"Content-Type": "text/html, charset=UTF-8"});
+      res.end(error404Page);
     }
   }
 })
