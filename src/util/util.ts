@@ -27,7 +27,7 @@ export function filterResponseHeaders(headers:IncomingHttpHeaders, baseUrl:strin
   if(result["set-cookie"]){
     for(let i = 0; i < result["set-cookie"].length; i++){
       result["set-cookie"][i] = result["set-cookie"][i]
-        .replace(/domain=[^;]+;/gi, "")
+        .replace(/(domain=[^;]+;)|(;\s*domain=[^;]+$)/gi, "")
         .replace(/\s\s/, " ")
         .replace(/path=(?<path>.+?);/, path => {
           return "path=" + urlUtil.escapeUrl(new URL(path.match(/path=(?<path>.+?);/).groups.path, baseUrl)) + ";";
