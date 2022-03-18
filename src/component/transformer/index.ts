@@ -2,6 +2,7 @@ import internal, { Transform, TransformCallback } from "stream";
 import encodingj from "encoding-japanese";
 import { transformHtml } from "./module/html";
 import { transformStyle } from "./module/style";
+import { transformJson } from "./module/json";
 
 export class ProxyTransformer extends Transform {
   private lineBuffer = "";
@@ -19,6 +20,8 @@ export class ProxyTransformer extends Transform {
       this.transformerFn = transformHtml;
     else if(mime.includes("text/css"))
       this.transformerFn = transformStyle;
+    else if(mime.includes("application/json"))
+      this.transformerFn = transformJson;
     else
       this.transformerFn = line => line;
     
@@ -27,7 +30,7 @@ export class ProxyTransformer extends Transform {
   }
 
   override _transform(chunk: any, encoding: BufferEncoding, callback: TransformCallback): void {
-    if(["text/html", "javascript", "text/css"].some(mime => this.mime.includes(mime))){
+    if(["text/html", "javascript", "text/css", "application/json"].some(mime => this.mime.includes(mime))){
       const lines = (this.encoding ? Buffer.from(encodingj.convert(chunk, "UTF8", this.encoding)).toString() : chunk.toString()).split("\n") as string[];
       lines[0] = this.lineBuffer + lines[0];
       this.lineBuffer = lines.pop();
