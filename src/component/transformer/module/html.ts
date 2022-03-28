@@ -3,10 +3,13 @@ import { transformStyle } from "./style";
 
 export function transformHtml(line:string, baseUrl:string){
   let result = line;
-  let regex = /<base[^>]+href="(?<href>[^"]+)"[^>]*>/i;
+  let regex = /(?<bfr><base[^>]+href=")(?<href>[^"]+)(?<aft>"[^>]*>)/i;
   if(result.match(regex)){
     baseUrl = new URL(result.match(regex).groups.href, baseUrl).href;
-    result = result.replace(regex, "");
+    result = result.replace(regex, val => {
+      const match = val.match(regex);
+      return `${match.groups.bfr}${urlUtil.escapeUrl(new URL(match.groups.href, baseUrl))}${match.groups.aft}`;
+    });
   }
   regex = /(?<bfr0><.+?((href)|(src)|(action))=")(?<url0>.*?)(?<aft0>".*?>)|(?<bfr1><.+?((href)|(src)|(action))=')(?<url1>.*?)(?<aft1>'.*?>)|(?<bfr2><.+?((href)|(src)|(action))=)(?<url2>[^\s>]*?)(?<aft2>(\s.*?>)|>)/i;
   if(result.match(regex)){
