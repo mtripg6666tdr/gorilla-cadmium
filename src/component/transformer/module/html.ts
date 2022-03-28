@@ -58,10 +58,11 @@ export function transformHtml(line:string, baseUrl:string){
   result = result.replace(new RegExp(regex, "g"), scriptBlock => {
     const match = scriptBlock.match(regex);
     let scr = match.groups.scr;
-    scr = scr.replace(/["']https?:\/\/[\w\$\(\)~\.\+\-]+/ig, (url) => {
+    scr = scr.replace(/["']https?:\/\/[\w\.\+\-]+/ig, (url) => {
       try{
+        const quot = url[0];
         const res = urlUtil.escapeUrl(url.substring(1)).slice(0, -1);
-        return res;
+        return quot + res;
       }
       catch{
         return url;
