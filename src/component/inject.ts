@@ -9,7 +9,7 @@
         window.btoa(durl.origin)
           .replace(/\+/g, "-")
           .replace(/\//g, "_")
-      }${durl.pathname + durl.search + durl.hash}`;
+      }${durl.pathname}${durl.search}${durl.hash}`;
   };
   const injectElem = document.getElementById("__gc_inject");
   if(!injectElem) return;

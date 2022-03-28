@@ -1,5 +1,6 @@
 import * as http from "http";
 import * as https from "https";
+import { Readable } from "stream";
 import * as zlib from "zlib";
 
 const httpLibs = {
@@ -72,4 +73,18 @@ export function decompressStream(reqres:http.IncomingMessage){
   }else{
     return reqres;
   }
+}
+
+export function resolveReadable(reqres:Readable){
+  return new Promise<Buffer>((resolve, reject) => {
+    let bufs = [] as Buffer[];
+    reqres
+      .on("data", (chunk) => bufs.push(chunk))
+      .on("end", () => {
+        resolve(Buffer.concat(bufs));
+        bufs = null;
+      })
+      .on("error", (er) => reject(er))
+    ;
+  })
 }

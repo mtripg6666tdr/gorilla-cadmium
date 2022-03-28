@@ -11,7 +11,7 @@ export function transformHtml(line:string, baseUrl:string){
       return `${match.groups.bfr}${urlUtil.escapeUrl(new URL(match.groups.href, baseUrl))}${match.groups.aft}`;
     });
   }
-  regex = /(?<bfr0><.+?((href)|(src)|(action))=")(?<url0>.*?)(?<aft0>".*?>)|(?<bfr1><.+?((href)|(src)|(action))=')(?<url1>.*?)(?<aft1>'.*?>)|(?<bfr2><.+?((href)|(src)|(action))=)(?<url2>[^\s>]*?)(?<aft2>(\s.*?>)|>)/i;
+  regex = /(?<bfr0><.+?\s((href)|(src)|(action))=")(?<url0>.*?)(?<aft0>".*?>)|(?<bfr1><.+?((href)|(src)|(action))=')(?<url1>.*?)(?<aft1>'.*?>)|(?<bfr2><.+?((href)|(src)|(action))=)(?<url2>[^\s>]*?)(?<aft2>(\s.*?>)|>)/i;
   if(result.match(regex)){
     result = result.replace(new RegExp(regex, "g"), val => {
       const match = val.match(regex);
@@ -44,11 +44,30 @@ export function transformHtml(line:string, baseUrl:string){
   if(result.match(regex)){
     result = result.replace(regex, "");
   }
+  regex = /nonce=".+?"/g;
+  if(result.match(regex)){
+    result = result.replace(regex, "");
+  }
   regex = /<\/body>/i;
   if(result.match(regex)){
-    const id = Date.now();
+    const id = Math.floor(Date.now() * Math.random()).toString(20);
     result = result.replace(regex, `<div id="box-${id}" style="position:fixed;z-index:9999999999;padding:0.5em;margin:0px;bottom:0px;left:0px;width:100%;box-sizing:border-box;background-color:white;border-top:1px solid black;border-radius:unset;"><span style="line-height:1.8em;">これはWebプロキシを使用しています。<a href="/">トップに戻る</a>/<a href="${baseUrl}" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">オリジナルのページを開く</a></span><span style="position:absolute;top:0px;right:0.3em;font-size:140%;line-height:1em;cursor:pointer;display:block;" onclick="document.getElementById('box-${id}').style.display='none';">x</span></div>$&`)
   }
-  line = transformStyle(line, baseUrl);
+  result = transformStyle(result, baseUrl);
+  regex = /(?<bfr><script[^>]*>)(?<scr>.*?)(?<aft><\/script>)/i;
+  result = result.replace(new RegExp(regex, "g"), scriptBlock => {
+    const match = scriptBlock.match(regex);
+    let scr = match.groups.scr;
+    scr = scr.replace(/["']https?:\/\/[\w\$\(\)~\.\+\-]+/ig, (url) => {
+      try{
+        const res = urlUtil.escapeUrl(url.substring(1)).slice(0, -1);
+        return res;
+      }
+      catch{
+        return url;
+      }
+    });
+    return `${match.groups.bfr}${scr}${match.groups.aft}`;
+  });
   return result;
 }
