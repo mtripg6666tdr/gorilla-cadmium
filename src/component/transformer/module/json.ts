@@ -37,7 +37,6 @@ function scanValues<T>(obj:any, transformer:(d:T)=>T):any{
   }else{
     const keys = (Object.keys(obj) as (keyof typeof obj)[]);
     for(let i = 0; i < keys.length; i++){
-      console.log(obj[keys[i]], "(", keys[i], ")", "will be scanned")
       obj[keys[i]] = scanValues(obj[keys[i]], transformer);
     }
     return obj;

@@ -1,7 +1,8 @@
-import { urlUtil } from "../../../util";
+import { base64, urlUtil } from "../../../util";
 import { transformStyle } from "./style";
 
 export function transformHtml(line:string, baseUrl:string){
+  const id = Math.floor(Date.now() * Math.random()).toString(20);
   let result = line;
   let regex = /(?<bfr><base[^>]+href=")(?<href>[^"]+)(?<aft>"[^>]*>)/i;
   if(result.match(regex)){
@@ -36,9 +37,9 @@ export function transformHtml(line:string, baseUrl:string){
       return `${match.groups.bfr0 || match.groups.bfr1 || match.groups.bfr2}${converted}${match.groups.aft0 || match.groups.aft1 || match.groups.aft2}`
     });
   }
-  regex = /<head(\s.*?)?>/i;
+  regex = /<html(\s.*?)?>/i;
   if(result.match(regex)){
-    result = result.replace(regex, `$&\n<meta http-equiv="x-proxy" content="gorila-cadmium">\n<script src="/gc_module_inject.js" id="__gc_inject" data-original="${encodeURIComponent(baseUrl)}"></script>`);
+    result = result.replace(regex, `$&\n<meta http-equiv="x-proxy" content="gorila-cadmium">\n<script src="/gc_module_inject.js?id=${encodeURIComponent(base64.encode(id))}" id="__v${id}__gc_inject_" data-original="${encodeURIComponent(baseUrl)}"></script>`);
   }
   regex = /integrity=".+?"/ig;
   if(result.match(regex)){
@@ -50,7 +51,6 @@ export function transformHtml(line:string, baseUrl:string){
   }
   regex = /<\/body>/i;
   if(result.match(regex)){
-    const id = Math.floor(Date.now() * Math.random()).toString(20);
     result = result.replace(regex, `<div id="box-${id}" style="position:fixed;z-index:9999999999;padding:0.5em;margin:0px;bottom:0px;left:0px;width:100%;box-sizing:border-box;background-color:white;border-top:1px solid black;border-radius:unset;"><span style="line-height:1.8em;">これはWebプロキシを使用しています。<a href="/">トップに戻る</a>/<a href="${baseUrl}" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">オリジナルのページを開く</a></span><span style="position:absolute;top:0px;right:0.3em;font-size:140%;line-height:1em;cursor:pointer;display:block;" onclick="document.getElementById('box-${id}').style.display='none';">x</span></div>$&`)
   }
   result = transformStyle(result, baseUrl);

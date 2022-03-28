@@ -1,5 +1,6 @@
 (function(){
   const prefix = "_x_session_x_";
+  const noticeId = "<id>";
   const generateUrl = (url:string)=>{
     if(url.startsWith("data:")) return url;
     if(url.startsWith("blob:")) return url;
@@ -11,7 +12,7 @@
           .replace(/\//g, "_")
       }${durl.pathname}${durl.search}${durl.hash}`;
   };
-  const injectElem = document.getElementById("__gc_inject");
+  const injectElem = document.getElementById(`__v${noticeId}__gc_inject_`);
   if(!injectElem) return;
   const currentUrl = new URL(decodeURIComponent(injectElem.dataset.original));
   const proxify = (href:string) => {
@@ -55,8 +56,8 @@
     return xhrOpen_orig.apply(this, arguments);
   } as typeof window.XMLHttpRequest.prototype.open;
   const formatElement = (element:Element) => {
-    if (!element.tagName) return;
-    if (
+    if(!element.tagName) return;
+    if(
       element.tagName.toLowerCase() === 'script' 
       || element.tagName.toLowerCase() === 'iframe' 
       || element.tagName.toLowerCase() === 'embed'
@@ -64,24 +65,24 @@
       // @ts-ignore
       Object.defineProperty(element.__proto__, 'src', {
         set: function(value) {
-            value = proxify(value);
-            element.setAttribute('src', value);
+          value = proxify(value);
+          element.setAttribute('src', value);
         }
       }); 
-    } else if (element.tagName.toLowerCase() === 'link') {
+    }else if(element.tagName.toLowerCase() === 'link') {
       // @ts-ignore
       Object.defineProperty(element.__proto__, 'href', {
         set: function(value) {
-            value = proxify(value);
-            element.setAttribute('href', value);
+          value = proxify(value);
+          element.setAttribute('href', value);
         }
       }); 
-    } else if (element.tagName.toLowerCase() === 'form') {
+    }else if(element.tagName.toLowerCase() === 'form') {
       // @ts-ignore
       Object.defineProperty(element.__proto__, 'action', {
         set: function(value) {
-            value = proxify(value);
-            element.setAttribute('action', value);
+          value = proxify(value);
+          element.setAttribute('action', value);
         }
       }); 
     }
@@ -126,7 +127,32 @@
   };
   setInterval(function() {
     if (!window.location.pathname.startsWith(`/${prefix}/${window.btoa(currentUrl.origin)}`)) {
-      history.replaceState('', '', `/${prefix}/${window.btoa(currentUrl.origin)}/${window.location.href.split('/').splice(3).join('/')}`);
+      history.replaceState("", "", `/${prefix}/${window.btoa(currentUrl.origin)}/${window.location.href.split('/').splice(3).join('/')}`);
     }
   }, 50);
-})()
+  window.addEventListener("load", () => {
+    setInterval(function(){
+      if(!document.querySelector(`body>div#box-${noticeId}`)){
+        const lostNotice = document.querySelector(`div#box-${noticeId}`);
+        if(lostNotice){
+          lostNotice.remove();
+        }
+        const div = document.createElement("div");
+        div.id = `box-${noticeId}`;
+        div.style.position = "fixed";
+        div.style.zIndex = "9999999999";
+        div.style.padding = "0.5em";
+        div.style.margin = "0px";
+        div.style.bottom = "0px";
+        div.style.left = "0px";
+        div.style.width = "100%";
+        div.style.boxSizing = "border-box";
+        div.style.backgroundColor = "white";
+        div.style.borderTop = "1px solid black";
+        div.style.borderRadius = "unset";
+        div.innerHTML = `<span style="line-height:1.8em;">これはWebプロキシを使用しています。<a href="/">トップに戻る</a>/<a href="${currentUrl}" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">オリジナルのページを開く</a></span><span style="position:absolute;top:0px;right:0.3em;font-size:140%;line-height:1em;cursor:pointer;display:block;" onclick="document.getElementById('box-${noticeId}').style.display='none';">x</span>`;
+        document.body.appendChild(div);
+      }
+    }, 1000);
+  })
+})();

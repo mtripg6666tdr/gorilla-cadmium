@@ -17,6 +17,7 @@
     "typescript": "^4.5.5"
   },
   "dependencies": {
-    "encoding-japanese": "^1.0.30"
+    "encoding-japanese": "^1.0.30",
+    "terser": "^5.12.1"
   }
 }

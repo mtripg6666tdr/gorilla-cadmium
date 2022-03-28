@@ -1,7 +1,8 @@
 import * as http from "http";
 import * as fs from "fs";
 import * as path from "path";
-import { urlUtil, util, web } from "./util";
+import { minify } from "terser";
+import { base64, urlUtil, util, web } from "./util";
 import { ProxyTransform } from "./component/transformer";
 import * as zlib from "zlib";
 import { resolveReadable } from "./util/web";
@@ -21,12 +22,14 @@ http.createServer(async (req, res) => {
       "Content-Encoding": "gzip",
     });
     res.end(zlib.gzipSync(indexPage));
-  }else if(req.url === "/gc_module_inject.js"){
+  }else if(req.url.startsWith("/gc_module_inject.js")){
+    const encoded = req.url.split("?id=")[1] || null;
+    const id = encoded ? base64.decode(decodeURIComponent(encoded)) : "0";
     res.writeHead(200, {
       "Content-Type": "text/javascript",
       "Content-Encoding": "gzip",
     });
-    res.end(zlib.gzipSync(injectScript));
+    res.end(zlib.gzipSync((await minify(injectScript.replace("<id>", id))).code));
   }else{
     const url = urlUtil.restoreOriginalUrl(req.url);
     if(url && !url.includes(req.headers["host"])){
