@@ -37,7 +37,7 @@ export function transformHtml(line:string, baseUrl:string){
       return `${match.groups.bfr0 || match.groups.bfr1 || match.groups.bfr2}${converted}${match.groups.aft0 || match.groups.aft1 || match.groups.aft2}`
     });
   }
-  regex = /<html(\s.*?)?>/i;
+  regex = /<html(\s.*?)?>/ig;
   if(result.match(regex)){
     result = result.replace(regex, `$&\n<meta http-equiv="x-proxy" content="gorila-cadmium">\n<script src="/gc_module_inject.js?id=${encodeURIComponent(base64.encode(id))}" id="__v${id}__gc_inject_" data-original="${encodeURIComponent(baseUrl)}"></script>`);
   }
