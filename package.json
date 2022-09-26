@@ -18,6 +18,6 @@
   },
   "dependencies": {
     "encoding-japanese": "^1.0.30",
-    "terser": "^5.12.1"
+    "terser": "^5.14.2"
   }
 }
