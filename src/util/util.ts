@@ -5,6 +5,7 @@ export function filterRequestHeaders(headers:IncomingHttpHeaders){
   const result = Object.assign({}, headers);
   if(result["host"]) delete result["host"];
   if(result["origin"]) delete result["origin"];
+  if(result["x-forwarded-for"]) delete result["x-forwarded-for"];
   if(result["referer"]) {
     const ref = new URL(result["referer"]);
     result["referer"] = urlUtil.restoreOriginalUrl(ref.pathname + ref.search + ref.hash);
